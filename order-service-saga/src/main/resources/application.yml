@@ -1,0 +1,43 @@
+spring.application.name: order-service
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/sample_local?serverTimezone=UTC
+    username: usrlocal
+    password: 123456
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:schema.sql
+
+spring.kafka.bootstrap-servers: http://localhost:9092
+
+spring.cloud.function.definition: orderEventSupplier;stockOrders;deliveryOrders;productOrders;orderEventSaga
+
+spring.cloud.stream.bindings.orderEventSupplier-out-0.destination: orders.buy
+spring.cloud.stream.kafka.bindings.orderEventSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+
+spring.cloud.stream.bindings.stockOrders-in-0.destination: orders.buy
+spring.cloud.stream.bindings.stockOrders-out-0.destination: orders.saga.stock
+spring.cloud.stream.kafka.streams.binder.functions.stockOrders.applicationId: stockOrders
+
+spring.cloud.stream.bindings.deliveryOrders-in-0.destination: orders.buy
+spring.cloud.stream.bindings.deliveryOrders-out-0.destination: orders.saga.delivery
+spring.cloud.stream.kafka.streams.binder.functions.deliveryOrders.applicationId: deliveryOrders
+
+spring.cloud.stream.bindings.productOrders-in-0.destination: orders.buy
+spring.cloud.stream.bindings.productOrders-out-0.destination: orders.saga.product
+spring.cloud.stream.kafka.streams.binder.functions.productOrders.applicationId: productOrders
+
+spring.cloud.stream.bindings.orderEventSaga-in-0.destination: orders.saga.stock
+spring.cloud.stream.bindings.orderEventSaga-in-1.destination: orders.saga.delivery
+spring.cloud.stream.bindings.orderEventSaga-in-2.destination: orders.saga.product
+spring.cloud.stream.bindings.orderEventSaga-out-0.destination: orders.buy
+spring.cloud.stream.kafka.streams.binder.functions.orderEventSaga.applicationId: orderEventSaga
+spring.cloud.stream.kafka.bindings.orderEventSaga-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+
+spring.output.ansi.enabled: ALWAYS
+
+logging.level.root: INFO
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
