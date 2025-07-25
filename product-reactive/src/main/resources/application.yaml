@@ -1,0 +1,33 @@
+spring.application.name: product-reactive
+
+#add config for r2dbc postgres
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver: postgresql
+    pool:
+      initial-size: 5
+      max-size: 20
+
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: com.koder.course.productreactive.api
+  pathsToMatch: /**
+
+api:
+  common:
+    version: 1.0.0
+    title: Product APIs
+    description: Description of the API...
+    termsOfService: MY TERMS OF SERVICE
+    license: MIT
+    licenseUrl: MY LICENSE URL
+    externalDocDesc: MY WIKI PAGE
+    externalDocUrl: MY WIKI URL
+    contact:
+      name: Khoa Vu
+      url: https://etask.vn
+      email: khoavd.it@gmail.com
