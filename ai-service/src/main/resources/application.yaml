@@ -1,0 +1,25 @@
+spring.application.name: ai-service
+
+spring.ai.openai.api-key: ${OPEN_AI_TOKEN:change-me}
+spring.ai.openai.chat.options.model: gpt-4o-mini
+
+# elastic vector store
+spring:
+  elasticsearch:
+    api-key: ${ELASTIC_API_KEY}
+    custom-uris: ${ELASTIC_API_ENDPOINT:elasticsearch:9200}
+    ssl-pass: ${ELASTIC_SSL_PASS}
+    connection-timeout: 5s
+    socket-timeout: 3s
+
+# scale
+spring.threads.virtual.enabled: true
+
+# health
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+
+spring.webflux.netty.connection-timeout: 60000
+spring.webflux.netty.response-timeout: 60s
+
+logging.level.org.springframework.ai: DEBUG

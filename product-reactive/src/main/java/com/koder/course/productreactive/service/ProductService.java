@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,19 @@ public class ProductService {
                 .onErrorMap(error -> new RuntimeException("Custom mapped exception", error))
                 .onErrorResume(error -> {
                     log.info("Fallback logic triggered");
+
+                    if (error instanceof TimeoutException) {
+                        return Mono.just(new ProductResponse(
+                                "fallback-id-for-timeout",
+                                "fallback-name-for-timeout",
+                                "fallback-description-for-timeout",
+                                BigDecimal.ZERO,
+                                0,
+                                Instant.now(),
+                                Instant.now()
+                        ));
+                    }
+
                     return Mono.just(new ProductResponse(
                             "fallback-id",
                             "fallback-name",
@@ -49,6 +63,10 @@ public class ProductService {
                         0,
                         Instant.now(),
                         Instant.now()
-                ));
+                ))
+                .onErrorContinue((throwable, value) -> {
+                    log.warn("Error processing value {}: {}", value, throwable.getMessage());
+                })
+                .onErrorComplete();
     }
 }
